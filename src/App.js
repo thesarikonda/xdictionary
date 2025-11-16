@@ -9,24 +9,24 @@ export default function App() {
   ]);
 
   const [term, setTerm] = useState("");
-  const [result, setResult] = useState(null); // null | { found: true, meaning: string } | { found: false }
+  const [definitionText, setDefinitionText] = useState(""); // always shown under <h3>Definition:</h3>
 
   const lookup = useMemo(() => {
-    const m = new Map();
-    dictionary.forEach(({ word, meaning }) => m.set(word.toLowerCase(), meaning));
-    return m;
+    const map = new Map();
+    dictionary.forEach(({ word, meaning }) => map.set(word.toLowerCase(), meaning));
+    return map;
   }, [dictionary]);
 
   const runSearch = () => {
     const q = term.trim().toLowerCase();
     if (!q) {
-      // Do nothing on empty query so tests don't treat it as "not found"
+      setDefinitionText("Word not found in the dictionary.");
       return;
     }
     if (lookup.has(q)) {
-      setResult({ found: true, meaning: lookup.get(q) });
+      setDefinitionText(lookup.get(q));
     } else {
-      setResult({ found: false });
+      setDefinitionText("Word not found in the dictionary.");
     }
   };
 
@@ -55,17 +55,8 @@ export default function App() {
       </div>
 
       <div style={{ marginTop: 20 }}>
-        {result && result.found && (
-          <div>
-            <h3>Definition:</h3>
-            <p>{result.meaning}</p>
-          </div>
-        )}
-
-        {result && !result.found && (
-          // IMPORTANT: render ONLY the exact message when not found.
-          <p>Word not found in the dictionary.</p>
-        )}
+        <h3>Definition:</h3>
+        <p>{definitionText}</p>
       </div>
     </div>
   );
